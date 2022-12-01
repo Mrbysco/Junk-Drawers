@@ -1,0 +1,7 @@
+0cf717662a4c8b7c8c77c84a84d17ca276f613e6 assets/junkdrawers/blockstates/drawer.json
+ef0395933e1e9fb7abe523aa85e21638727b0352 assets/junkdrawers/lang/en_us.json
+5ba113b8b031eab571e1b0076329ab971b2f9ef0 assets/junkdrawers/models/item/drawer.json
+bf855ab96078a23ac141248dbced7cc24fbb7330 assets/junkdrawers/sounds.json
+319ea2c1d5f97ed4a4e787de499d0373935409ba data/junkdrawers/advancements/recipes/redstone/drawer.json
+1a8e4bbfb3b418dab2c8a73e0fd188df9c096d4a data/junkdrawers/loot_tables/blocks/drawer.json
+69f6b4ba765582b1eec220e4cfe10d86b96e2617 data/junkdrawers/recipes/drawer.json

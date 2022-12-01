@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+issueTrackerURL="https://github.com/Mrbysco/Junk-Drawers/issues"
+license="MIT"
+
+[[mods]]
+modId="junkdrawers"
+version="${file.jarVersion}"
+displayName="Junk Drawers"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/junk-drawers"
+authors="Mrbysco, ShyNieke"
+description='''
+Let's just drop my inventory in here real quick
+'''
+[[dependencies.junkdrawers]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.18.2,1.19)"
+ordering="NONE"
+side="BOTH"

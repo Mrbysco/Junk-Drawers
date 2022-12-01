@@ -1,0 +1,8 @@
+{
+  "block.junkdrawers.drawer": "Junk Drawer",
+  "junkdrawers.container.drawer": "Junk Drawer",
+  "junkdrawers.drawer.jammed": "The drawer jammed, please try again",
+  "junkdrawers.subtitle.drawer.close": "Drawer Closes",
+  "junkdrawers.subtitle.drawer.jammed": "Drawer Jammed",
+  "junkdrawers.subtitle.drawer.open": "Drawer Opens"
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "junkdrawers:block/drawer"
+    },
+    "facing=south": {
+      "model": "junkdrawers:block/drawer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "junkdrawers:block/drawer",
+      "y": 270
+    },
+    "facing=east": {
+      "model": "junkdrawers:block/drawer",
+      "y": 90
+    }
+  }
+}
