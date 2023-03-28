@@ -28,9 +28,9 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.common.data.SoundDefinitionsProvider;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
@@ -48,14 +48,14 @@ public class JunkDatagen {
 		ExistingFileHelper helper = event.getExistingFileHelper();
 
 		if (event.includeServer()) {
-			generator.addProvider(new JunkLoot(generator));
-			generator.addProvider(new JunkRecipeProvider(generator));
+			generator.addProvider(true, new JunkLoot(generator));
+			generator.addProvider(true, new JunkRecipeProvider(generator));
 		}
 		if (event.includeClient()) {
-			generator.addProvider(new JunkLanguageProvider(generator));
-			generator.addProvider(new JunkSoundProvider(generator, helper));
-			generator.addProvider(new JunkBlockstateProvider(generator, helper));
-			generator.addProvider(new JunkItemModelProvider(generator, helper));
+			generator.addProvider(true, new JunkLanguageProvider(generator));
+			generator.addProvider(true, new JunkSoundProvider(generator, helper));
+			generator.addProvider(true, new JunkBlockstateProvider(generator, helper));
+			generator.addProvider(true, new JunkItemModelProvider(generator, helper));
 		}
 	}
 

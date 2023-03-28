@@ -6,8 +6,7 @@ import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
@@ -36,7 +35,7 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -73,10 +72,10 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 				float percentageFilled = getFillPercentage(drawerBlockEntity.handler);
 				if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.random.nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
 					level.playSound(null, pos, JunkRegistry.DRAWER_JAMMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-					player.displayClientMessage(new TranslatableComponent("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
+					player.displayClientMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
 				} else {
 					level.playSound(null, pos, JunkRegistry.DRAWER_OPEN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-					NetworkHooks.openGui((ServerPlayer) player, drawerBlockEntity, pos);
+					NetworkHooks.openScreen((ServerPlayer) player, drawerBlockEntity, pos);
 				}
 				PiglinAi.angerNearbyPiglins(player, true);
 				return InteractionResult.CONSUME;
@@ -108,7 +107,7 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 		if (!state.is(newState.getBlock())) {
 			BlockEntity blockentity = level.getBlockEntity(pos);
 			if (blockentity instanceof DrawerBlockEntity) {
-				blockentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+				blockentity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
 					for (int i = 0; i < handler.getSlots(); ++i) {
 						Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
 					}

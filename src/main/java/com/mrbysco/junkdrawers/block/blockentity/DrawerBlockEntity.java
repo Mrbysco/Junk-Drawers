@@ -9,7 +9,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -22,8 +21,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -84,7 +83,7 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	@Override
-	public CompoundTag getTileData() {
+	public CompoundTag getPersistentData() {
 		CompoundTag nbt = new CompoundTag();
 		this.saveAdditional(nbt);
 		return nbt;
@@ -104,7 +103,7 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 
 	@Override
 	public Component getDisplayName() {
-		return new TranslatableComponent(JunkDrawers.MOD_ID + ".container.drawer");
+		return Component.translatable(JunkDrawers.MOD_ID + ".container.drawer");
 	}
 
 	public boolean stillValid(Player player) {
@@ -124,7 +123,7 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+		if (capability == ForgeCapabilities.ITEM_HANDLER) {
 			return stackHolder.cast();
 		}
 		return super.getCapability(capability, facing);

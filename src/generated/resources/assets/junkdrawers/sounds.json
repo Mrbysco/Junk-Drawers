@@ -1,20 +1,20 @@
 {
-  "drawer.open": {
-    "subtitle": "junkdrawers.subtitle.drawer.open",
-    "sounds": [
-      "junkdrawers:drawer_open"
-    ]
-  },
   "drawer.close": {
-    "subtitle": "junkdrawers.subtitle.drawer.close",
     "sounds": [
       "junkdrawers:drawer_close"
-    ]
+    ],
+    "subtitle": "junkdrawers.subtitle.drawer.close"
   },
   "drawer.jammed": {
-    "subtitle": "junkdrawers.subtitle.drawer.jammed",
     "sounds": [
       "junkdrawers:drawer_jammed"
-    ]
+    ],
+    "subtitle": "junkdrawers.subtitle.drawer.jammed"
+  },
+  "drawer.open": {
+    "sounds": [
+      "junkdrawers:drawer_open"
+    ],
+    "subtitle": "junkdrawers.subtitle.drawer.open"
   }
 }
