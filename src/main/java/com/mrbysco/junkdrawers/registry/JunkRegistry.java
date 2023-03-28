@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -30,15 +29,15 @@ public class JunkRegistry {
 			IForgeMenuType.create(DrawerMenu::new));
 
 	public static final RegistryObject<SoundEvent> DRAWER_OPEN = SOUND_EVENTS.register("drawer.open", () ->
-			new SoundEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.open")));
+			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.open")));
 	public static final RegistryObject<SoundEvent> DRAWER_CLOSE = SOUND_EVENTS.register("drawer.close", () ->
-			new SoundEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.close")));
+			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.close")));
 	public static final RegistryObject<SoundEvent> DRAWER_JAMMED = SOUND_EVENTS.register("drawer.jammed", () ->
-			new SoundEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.jammed")));
+			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.jammed")));
 
 	public static final RegistryObject<Block> DRAWER = BLOCKS.register("drawer", () -> new DrawerBlock(Block.Properties.of(Material.WOOD)
 			.strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final RegistryObject<Item> DRAWER_ITEM = ITEMS.register("drawer", () -> new BlockItem(DRAWER.get(), new Item.Properties().tab(CreativeModeTab.TAB_REDSTONE)));
+	public static final RegistryObject<Item> DRAWER_ITEM = ITEMS.register("drawer", () -> new BlockItem(DRAWER.get(), new Item.Properties()));
 
 	public static final RegistryObject<BlockEntityType<DrawerBlockEntity>> DRAWER_BLOCK_ENTITY = BLOCK_ENTITIES.register("drawer", () ->
 			BlockEntityType.Builder.of(DrawerBlockEntity::new, JunkRegistry.DRAWER.get()).build(null));

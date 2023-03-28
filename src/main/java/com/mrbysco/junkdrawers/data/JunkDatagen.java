@@ -1,25 +1,25 @@
 package com.mrbysco.junkdrawers.data;
 
-import com.google.common.collect.ImmutableList;
-import com.mojang.datafixers.util.Pair;
 import com.mrbysco.junkdrawers.JunkDrawers;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.PackOutput;
+import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.ValidationContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
@@ -35,9 +35,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class JunkDatagen {
@@ -45,24 +44,25 @@ public class JunkDatagen {
 	@SubscribeEvent
 	public static void gatherData(GatherDataEvent event) {
 		DataGenerator generator = event.getGenerator();
+		PackOutput packOutput = generator.getPackOutput();
 		ExistingFileHelper helper = event.getExistingFileHelper();
 
 		if (event.includeServer()) {
-			generator.addProvider(true, new JunkLoot(generator));
-			generator.addProvider(true, new JunkRecipeProvider(generator));
+			generator.addProvider(true, new JunkLoot(packOutput));
+			generator.addProvider(true, new JunkRecipeProvider(packOutput));
 		}
 		if (event.includeClient()) {
-			generator.addProvider(true, new JunkLanguageProvider(generator));
-			generator.addProvider(true, new JunkSoundProvider(generator, helper));
-			generator.addProvider(true, new JunkBlockstateProvider(generator, helper));
-			generator.addProvider(true, new JunkItemModelProvider(generator, helper));
+			generator.addProvider(true, new JunkLanguageProvider(packOutput));
+			generator.addProvider(true, new JunkSoundProvider(packOutput, helper));
+			generator.addProvider(true, new JunkBlockstateProvider(packOutput, helper));
+			generator.addProvider(true, new JunkItemModelProvider(packOutput, helper));
 		}
 	}
 
 	private static class JunkLanguageProvider extends LanguageProvider {
 
-		public JunkLanguageProvider(DataGenerator gen) {
-			super(gen, JunkDrawers.MOD_ID, "en_us");
+		public JunkLanguageProvider(PackOutput packOutput) {
+			super(packOutput, JunkDrawers.MOD_ID, "en_us");
 		}
 
 		@Override
@@ -90,8 +90,8 @@ public class JunkDatagen {
 
 	public static class JunkSoundProvider extends SoundDefinitionsProvider {
 
-		public JunkSoundProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
-			super(generator, JunkDrawers.MOD_ID, existingFileHelper);
+		public JunkSoundProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper) {
+			super(packOutput, JunkDrawers.MOD_ID, existingFileHelper);
 		}
 
 		@Override
@@ -119,13 +119,13 @@ public class JunkDatagen {
 
 	private static class JunkRecipeProvider extends RecipeProvider {
 
-		public JunkRecipeProvider(DataGenerator gen) {
-			super(gen);
+		public JunkRecipeProvider(PackOutput packOutput) {
+			super(packOutput);
 		}
 
 		@Override
-		protected void buildCraftingRecipes(Consumer<FinishedRecipe> recipeConsumer) {
-			ShapedRecipeBuilder.shaped(JunkRegistry.DRAWER.get())
+		protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
+			ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, JunkRegistry.DRAWER.get())
 					.pattern("PCP").pattern("P P").pattern("PCP")
 					.define('P', ItemTags.PLANKS)
 					.define('C', Tags.Items.CHESTS_WOODEN)
@@ -134,21 +134,20 @@ public class JunkDatagen {
 	}
 
 	private static class JunkLoot extends LootTableProvider {
-		public JunkLoot(DataGenerator gen) {
-			super(gen);
+		public JunkLoot(PackOutput packOutput) {
+			super(packOutput, Set.of(), List.of
+					(new SubProviderEntry(JunkBlockTables::new, LootContextParamSets.BLOCK)
+					));
 		}
 
-		@Override
-		protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
-			return ImmutableList.of(
-					Pair.of(BlockTables::new, LootContextParamSets.BLOCK)
-			);
-		}
+		public static class JunkBlockTables extends BlockLootSubProvider {
 
-		public static class BlockTables extends BlockLoot {
+			protected JunkBlockTables() {
+				super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+			}
 
 			@Override
-			protected void addTables() {
+			protected void generate() {
 				this.dropSelf(JunkRegistry.DRAWER.get());
 			}
 
@@ -165,8 +164,8 @@ public class JunkDatagen {
 	}
 
 	private static class JunkBlockstateProvider extends BlockStateProvider {
-		public JunkBlockstateProvider(DataGenerator gen, ExistingFileHelper helper) {
-			super(gen, JunkDrawers.MOD_ID, helper);
+		public JunkBlockstateProvider(PackOutput packOutput, ExistingFileHelper helper) {
+			super(packOutput, JunkDrawers.MOD_ID, helper);
 		}
 
 		@Override
@@ -189,8 +188,8 @@ public class JunkDatagen {
 	}
 
 	private static class JunkItemModelProvider extends ItemModelProvider {
-		public JunkItemModelProvider(DataGenerator gen, ExistingFileHelper helper) {
-			super(gen, JunkDrawers.MOD_ID, helper);
+		public JunkItemModelProvider(PackOutput packOutput, ExistingFileHelper helper) {
+			super(packOutput, JunkDrawers.MOD_ID, helper);
 		}
 
 		@Override
