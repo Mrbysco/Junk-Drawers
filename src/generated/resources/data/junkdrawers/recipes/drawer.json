@@ -16,5 +16,6 @@
   ],
   "result": {
     "item": "junkdrawers:drawer"
-  }
+  },
+  "show_notification": true
 }
