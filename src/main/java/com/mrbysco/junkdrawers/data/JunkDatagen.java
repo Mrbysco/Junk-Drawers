@@ -18,7 +18,6 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.LootTables;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
@@ -159,7 +158,7 @@ public class JunkDatagen {
 
 		@Override
 		protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationContext) {
-			map.forEach((name, table) -> LootTables.validate(validationContext, name, table));
+			map.forEach((name, table) -> table.validate(validationContext));
 		}
 	}
 

@@ -28,5 +28,6 @@
     "recipes": [
       "junkdrawers:drawer"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

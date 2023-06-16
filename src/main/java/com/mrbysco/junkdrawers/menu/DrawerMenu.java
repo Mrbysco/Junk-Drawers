@@ -29,7 +29,7 @@ public class DrawerMenu extends AbstractContainerMenu {
 	private static DrawerBlockEntity getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
 		Objects.requireNonNull(playerInventory, "playerInventory cannot be null!");
 		Objects.requireNonNull(data, "data cannot be null!");
-		final BlockEntity BlockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+		final BlockEntity BlockEntityAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
 
 		if (BlockEntityAtPos instanceof DrawerBlockEntity) {
 			return (DrawerBlockEntity) BlockEntityAtPos;
@@ -69,7 +69,7 @@ public class DrawerMenu extends AbstractContainerMenu {
 	@Override
 	public void removed(Player player) {
 		if (player != null) {
-			player.level.playSound(null, drawerPos, JunkRegistry.DRAWER_CLOSE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+			player.level().playSound(null, drawerPos, JunkRegistry.DRAWER_CLOSE.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 		}
 		super.removed(player);
 	}

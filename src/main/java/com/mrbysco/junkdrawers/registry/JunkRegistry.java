@@ -10,9 +10,9 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -35,7 +35,7 @@ public class JunkRegistry {
 	public static final RegistryObject<SoundEvent> DRAWER_JAMMED = SOUND_EVENTS.register("drawer.jammed", () ->
 			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.jammed")));
 
-	public static final RegistryObject<Block> DRAWER = BLOCKS.register("drawer", () -> new DrawerBlock(Block.Properties.of(Material.WOOD)
+	public static final RegistryObject<Block> DRAWER = BLOCKS.register("drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.OAK_PLANKS)
 			.strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
 	public static final RegistryObject<Item> DRAWER_ITEM = ITEMS.register("drawer", () -> new BlockItem(DRAWER.get(), new Item.Properties()));
 
