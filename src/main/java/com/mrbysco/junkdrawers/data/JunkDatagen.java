@@ -13,8 +13,10 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -66,7 +68,20 @@ public class JunkDatagen {
 
 		@Override
 		protected void addTranslations() {
-			addBlock(JunkRegistry.DRAWER, "Junk Drawer");
+			add("itemGroup.junkdrawers.tab", "Junk Drawers");
+
+			addBlock(JunkRegistry.OAK_DRAWER, "Oak Junk Drawer");
+			addBlock(JunkRegistry.SPRUCE_DRAWER, "Spruce Junk Drawer");
+			addBlock(JunkRegistry.BIRCH_DRAWER, "Birch Junk Drawer");
+			addBlock(JunkRegistry.JUNGLE_DRAWER, "Jungle Junk Drawer");
+			addBlock(JunkRegistry.ACACIA_DRAWER, "Acacia Junk Drawer");
+			addBlock(JunkRegistry.CHERRY_DRAWER, "Cherry Junk Drawer");
+			addBlock(JunkRegistry.DARK_OAK_DRAWER, "Dark Oak Junk Drawer");
+			addBlock(JunkRegistry.MANGROVE_DRAWER, "Mangrove Junk Drawer");
+			addBlock(JunkRegistry.BAMBOO_DRAWER, "Bamboo Junk Drawer");
+
+			addBlock(JunkRegistry.CRIMSON_DRAWER, "Crimson Junk Drawer");
+			addBlock(JunkRegistry.WARPED_DRAWER, "Warped Junk Drawer");
 
 			add("junkdrawers.container.drawer", "Junk Drawer");
 
@@ -124,11 +139,26 @@ public class JunkDatagen {
 
 		@Override
 		protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
-			ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, JunkRegistry.DRAWER.get())
+			generateRecipe(recipeConsumer, JunkRegistry.OAK_DRAWER.get(), Items.OAK_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.SPRUCE_DRAWER.get(), Items.SPRUCE_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.BIRCH_DRAWER.get(), Items.BIRCH_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.JUNGLE_DRAWER.get(), Items.JUNGLE_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.ACACIA_DRAWER.get(), Items.ACACIA_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.CHERRY_DRAWER.get(), Items.CHERRY_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.DARK_OAK_DRAWER.get(), Items.DARK_OAK_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.MANGROVE_DRAWER.get(), Items.MANGROVE_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.BAMBOO_DRAWER.get(), Items.BAMBOO_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.CRIMSON_DRAWER.get(), Items.CRIMSON_PLANKS);
+			generateRecipe(recipeConsumer, JunkRegistry.WARPED_DRAWER.get(), Items.WARPED_PLANKS);
+		}
+
+		private void generateRecipe(Consumer<FinishedRecipe> recipeConsumer, ItemLike drawer, Item planks) {
+			ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, drawer)
 					.pattern("PCP").pattern("P P").pattern("PCP")
-					.define('P', ItemTags.PLANKS)
+					.define('P', planks)
 					.define('C', Tags.Items.CHESTS_WOODEN)
-					.unlockedBy("has_chest", has(Tags.Items.CHESTS_WOODEN)).save(recipeConsumer);
+					.unlockedBy("has_chest", has(Tags.Items.CHESTS_WOODEN))
+					.unlockedBy("has_planks", has(planks)).save(recipeConsumer);
 		}
 	}
 
@@ -147,7 +177,18 @@ public class JunkDatagen {
 
 			@Override
 			protected void generate() {
-				this.dropSelf(JunkRegistry.DRAWER.get());
+				this.dropSelf(JunkRegistry.OAK_DRAWER.get());
+				this.dropSelf(JunkRegistry.SPRUCE_DRAWER.get());
+				this.dropSelf(JunkRegistry.BIRCH_DRAWER.get());
+				this.dropSelf(JunkRegistry.JUNGLE_DRAWER.get());
+				this.dropSelf(JunkRegistry.ACACIA_DRAWER.get());
+				this.dropSelf(JunkRegistry.CHERRY_DRAWER.get());
+				this.dropSelf(JunkRegistry.DARK_OAK_DRAWER.get());
+				this.dropSelf(JunkRegistry.MANGROVE_DRAWER.get());
+				this.dropSelf(JunkRegistry.BAMBOO_DRAWER.get());
+
+				this.dropSelf(JunkRegistry.CRIMSON_DRAWER.get());
+				this.dropSelf(JunkRegistry.WARPED_DRAWER.get());
 			}
 
 			@Override
@@ -169,11 +210,39 @@ public class JunkDatagen {
 
 		@Override
 		protected void registerStatesAndModels() {
-			makeDrawer(JunkRegistry.DRAWER);
+			makeDrawer(JunkRegistry.OAK_DRAWER);
+			makeAnotherDrawer(JunkRegistry.SPRUCE_DRAWER);
+			makeAnotherDrawer(JunkRegistry.BIRCH_DRAWER);
+			makeAnotherDrawer(JunkRegistry.JUNGLE_DRAWER);
+			makeAnotherDrawer(JunkRegistry.ACACIA_DRAWER);
+			makeAnotherDrawer(JunkRegistry.CHERRY_DRAWER);
+			makeAnotherDrawer(JunkRegistry.DARK_OAK_DRAWER);
+			makeAnotherDrawer(JunkRegistry.MANGROVE_DRAWER);
+			makeAnotherDrawer(JunkRegistry.BAMBOO_DRAWER);
+
+			makeAnotherDrawer(JunkRegistry.CRIMSON_DRAWER);
+			makeAnotherDrawer(JunkRegistry.WARPED_DRAWER);
 		}
 
 		private void makeDrawer(RegistryObject<Block> registryObject) {
 			ModelFile model = models().getExistingFile(modLoc("block/" + registryObject.getId().getPath()));
+			getVariantBuilder(registryObject.get())
+					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+					.modelForState().modelFile(model).addModel()
+					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
+					.modelForState().modelFile(model).rotationY(90).addModel()
+					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
+					.modelForState().modelFile(model).rotationY(180).addModel()
+					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST)
+					.modelForState().modelFile(model).rotationY(270).addModel();
+		}
+
+		private void makeAnotherDrawer(RegistryObject<Block> registryObject) {
+			ResourceLocation texture = modLoc("block/" + registryObject.getId().getPath());
+			ModelFile model = models().getBuilder(registryObject.getId().getPath())
+					.parent(models().getExistingFile(modLoc("block/drawer")))
+					.texture("planks", texture)
+					.texture("particle", texture);
 			getVariantBuilder(registryObject.get())
 					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
 					.modelForState().modelFile(model).addModel()
@@ -193,7 +262,18 @@ public class JunkDatagen {
 
 		@Override
 		protected void registerModels() {
-			withBlockParent(JunkRegistry.DRAWER.getId());
+			withBlockParent(JunkRegistry.OAK_DRAWER.getId());
+			withBlockParent(JunkRegistry.SPRUCE_DRAWER.getId());
+			withBlockParent(JunkRegistry.BIRCH_DRAWER.getId());
+			withBlockParent(JunkRegistry.JUNGLE_DRAWER.getId());
+			withBlockParent(JunkRegistry.ACACIA_DRAWER.getId());
+			withBlockParent(JunkRegistry.CHERRY_DRAWER.getId());
+			withBlockParent(JunkRegistry.DARK_OAK_DRAWER.getId());
+			withBlockParent(JunkRegistry.MANGROVE_DRAWER.getId());
+			withBlockParent(JunkRegistry.BAMBOO_DRAWER.getId());
+
+			withBlockParent(JunkRegistry.CRIMSON_DRAWER.getId());
+			withBlockParent(JunkRegistry.WARPED_DRAWER.getId());
 		}
 
 		private void withBlockParent(ResourceLocation location) {

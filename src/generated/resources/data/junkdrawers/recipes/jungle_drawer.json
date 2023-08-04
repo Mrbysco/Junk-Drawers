@@ -6,7 +6,7 @@
       "tag": "forge:chests/wooden"
     },
     "P": {
-      "item": "minecraft:oak_planks"
+      "item": "minecraft:jungle_planks"
     }
   },
   "pattern": [
@@ -15,7 +15,7 @@
     "PCP"
   ],
   "result": {
-    "item": "junkdrawers:drawer"
+    "item": "junkdrawers:jungle_drawer"
   },
   "show_notification": true
 }

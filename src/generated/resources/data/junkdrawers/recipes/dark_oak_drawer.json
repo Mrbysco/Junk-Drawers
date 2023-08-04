@@ -6,7 +6,7 @@
       "tag": "forge:chests/wooden"
     },
     "P": {
-      "item": "minecraft:oak_planks"
+      "item": "minecraft:dark_oak_planks"
     }
   },
   "pattern": [
@@ -15,7 +15,7 @@
     "PCP"
   ],
   "result": {
-    "item": "junkdrawers:drawer"
+    "item": "junkdrawers:dark_oak_drawer"
   },
   "show_notification": true
 }

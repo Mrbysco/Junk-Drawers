@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "junkdrawers:block/bamboo_drawer",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "junkdrawers:block/bamboo_drawer"
+    },
+    "facing=south": {
+      "model": "junkdrawers:block/bamboo_drawer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "junkdrawers:block/bamboo_drawer",
+      "y": 270
+    }
+  }
+}

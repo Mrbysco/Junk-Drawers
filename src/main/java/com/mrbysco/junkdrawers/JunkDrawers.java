@@ -5,7 +5,7 @@ import com.mrbysco.junkdrawers.client.ClientHandler;
 import com.mrbysco.junkdrawers.config.JunkConfig;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -14,6 +14,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 
 @Mod(JunkDrawers.MOD_ID)
@@ -28,6 +29,7 @@ public class JunkDrawers {
 
 		JunkRegistry.BLOCKS.register(eventBus);
 		JunkRegistry.ITEMS.register(eventBus);
+		JunkRegistry.CREATIVE_MODE_TABS.register(eventBus);
 		JunkRegistry.BLOCK_ENTITIES.register(eventBus);
 		JunkRegistry.SOUND_EVENTS.register(eventBus);
 		JunkRegistry.MENU_TYPES.register(eventBus);
@@ -41,7 +43,9 @@ public class JunkDrawers {
 
 	private void buildCreativeContents(BuildCreativeModeTabContentsEvent event) {
 		if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) {
-			event.accept(new ItemStack(JunkRegistry.DRAWER_ITEM.get()));
+			for (RegistryObject<Item> itemRegistryObject : JunkRegistry.ITEMS.getEntries()) {
+				event.accept(itemRegistryObject.get());
+			}
 		}
 	}
 }

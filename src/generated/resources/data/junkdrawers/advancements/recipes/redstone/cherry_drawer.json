@@ -16,7 +16,7 @@
         "items": [
           {
             "items": [
-              "minecraft:oak_planks"
+              "minecraft:cherry_planks"
             ]
           }
         ]
@@ -25,7 +25,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "junkdrawers:drawer"
+        "recipe": "junkdrawers:cherry_drawer"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -39,7 +39,7 @@
   ],
   "rewards": {
     "recipes": [
-      "junkdrawers:drawer"
+      "junkdrawers:cherry_drawer"
     ]
   },
   "sends_telemetry_event": false

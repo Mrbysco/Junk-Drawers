@@ -1,0 +1,7 @@
+{
+  "parent": "junkdrawers:block/drawer",
+  "textures": {
+    "particle": "junkdrawers:block/spruce_drawer",
+    "planks": "junkdrawers:block/spruce_drawer"
+  }
+}

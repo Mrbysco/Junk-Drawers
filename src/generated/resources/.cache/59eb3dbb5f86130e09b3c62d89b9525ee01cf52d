@@ -1,2 +1,12 @@
-// 1.20.1	2023-06-16T22:09:55.8044068	Loot Tables
+// 1.20.1	2023-08-04T19:04:19.1131432	Loot Tables
+3394769d5dae10c6842528fe8e424d94e54786b1 data/junkdrawers/loot_tables/blocks/acacia_drawer.json
+d99e826878a1d19a5da09311e2a6cf9b10328ac6 data/junkdrawers/loot_tables/blocks/bamboo_drawer.json
+662bca71e1b4878c9279ac57fa10d0e58d545e03 data/junkdrawers/loot_tables/blocks/birch_drawer.json
+de91f54617e057e7d3bd86aca58aa26d24c6e625 data/junkdrawers/loot_tables/blocks/cherry_drawer.json
+d3ffb7236f5ac0ec113240c4f7aaa36fda5d2713 data/junkdrawers/loot_tables/blocks/crimson_drawer.json
+358186202dcf0123f69bac50ea83dce62c1f0fe4 data/junkdrawers/loot_tables/blocks/dark_oak_drawer.json
 4d38fcdfef4107d58338827f352abaca285da705 data/junkdrawers/loot_tables/blocks/drawer.json
+e16f48da008cfbb69e814ab7ef1adf86aea2a5a6 data/junkdrawers/loot_tables/blocks/jungle_drawer.json
+8f6ea77e58bb6b1c70e2dd5c59988af0a800d8ba data/junkdrawers/loot_tables/blocks/mangrove_drawer.json
+e35aa2cb989e76ad443c2f528ffa27e58cba2904 data/junkdrawers/loot_tables/blocks/spruce_drawer.json
+01a8d6b082aba6086926a3ba39432cc110cda8aa data/junkdrawers/loot_tables/blocks/warped_drawer.json
