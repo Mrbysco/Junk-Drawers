@@ -6,15 +6,14 @@ import com.mrbysco.junkdrawers.config.JunkConfig;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.slf4j.Logger;
 
 @Mod(JunkDrawers.MOD_ID)
@@ -36,14 +35,14 @@ public class JunkDrawers {
 
 		eventBus.addListener(this::buildCreativeContents);
 
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+		if (FMLEnvironment.dist.isClient()) {
 			eventBus.addListener(ClientHandler::onClientSetup);
-		});
+		}
 	}
 
 	private void buildCreativeContents(BuildCreativeModeTabContentsEvent event) {
 		if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) {
-			for (RegistryObject<Item> itemRegistryObject : JunkRegistry.ITEMS.getEntries()) {
+			for (DeferredHolder<Item, ? extends Item> itemRegistryObject : JunkRegistry.ITEMS.getEntries()) {
 				event.accept(itemRegistryObject.get());
 			}
 		}

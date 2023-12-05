@@ -1,18 +1,18 @@
 package com.mrbysco.junkdrawers.config;
 
 import com.mrbysco.junkdrawers.JunkDrawers;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class JunkConfig {
 	public static class Common {
-		public final ForgeConfigSpec.BooleanValue randomizeOnContentChange;
-		public final ForgeConfigSpec.DoubleValue jamPercentage;
-		public final ForgeConfigSpec.DoubleValue jamChance;
+		public final ModConfigSpec.BooleanValue randomizeOnContentChange;
+		public final ModConfigSpec.DoubleValue jamPercentage;
+		public final ModConfigSpec.DoubleValue jamChance;
 
-		Common(ForgeConfigSpec.Builder builder) {
+		Common(ModConfigSpec.Builder builder) {
 			builder.comment("General")
 					.push("general");
 
@@ -33,11 +33,11 @@ public class JunkConfig {
 	}
 
 
-	public static final ForgeConfigSpec commonSpec;
+	public static final ModConfigSpec commonSpec;
 	public static final Common COMMON;
 
 	static {
-		final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
+		final Pair<Common, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Common::new);
 		commonSpec = specPair.getRight();
 		COMMON = specPair.getLeft();
 	}

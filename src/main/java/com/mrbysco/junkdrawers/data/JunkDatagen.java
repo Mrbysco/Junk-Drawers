@@ -1,14 +1,16 @@
 package com.mrbysco.junkdrawers.data;
 
 import com.mrbysco.junkdrawers.JunkDrawers;
+import com.mrbysco.junkdrawers.block.DrawerBlock;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
@@ -22,22 +24,23 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.LanguageProvider;
-import net.minecraftforge.common.data.SoundDefinitionsProvider;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.LanguageProvider;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class JunkDatagen {
@@ -50,7 +53,7 @@ public class JunkDatagen {
 
 		if (event.includeServer()) {
 			generator.addProvider(true, new JunkLoot(packOutput));
-			generator.addProvider(true, new JunkRecipeProvider(packOutput));
+			generator.addProvider(true, new JunkRecipeProvider(packOutput, event.getLookupProvider()));
 		}
 		if (event.includeClient()) {
 			generator.addProvider(true, new JunkLanguageProvider(packOutput));
@@ -92,7 +95,7 @@ public class JunkDatagen {
 			addSubtitle(JunkRegistry.DRAWER_JAMMED, "Drawer Jammed");
 		}
 
-		public void addSubtitle(RegistryObject<SoundEvent> sound, String name) {
+		public void addSubtitle(Supplier<SoundEvent> sound, String name) {
 			this.addSubtitle(sound.get(), name);
 		}
 
@@ -133,32 +136,32 @@ public class JunkDatagen {
 
 	private static class JunkRecipeProvider extends RecipeProvider {
 
-		public JunkRecipeProvider(PackOutput packOutput) {
-			super(packOutput);
+		public JunkRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+			super(packOutput, lookupProvider);
 		}
 
 		@Override
-		protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
-			generateRecipe(recipeConsumer, JunkRegistry.OAK_DRAWER.get(), Items.OAK_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.SPRUCE_DRAWER.get(), Items.SPRUCE_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.BIRCH_DRAWER.get(), Items.BIRCH_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.JUNGLE_DRAWER.get(), Items.JUNGLE_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.ACACIA_DRAWER.get(), Items.ACACIA_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.CHERRY_DRAWER.get(), Items.CHERRY_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.DARK_OAK_DRAWER.get(), Items.DARK_OAK_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.MANGROVE_DRAWER.get(), Items.MANGROVE_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.BAMBOO_DRAWER.get(), Items.BAMBOO_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.CRIMSON_DRAWER.get(), Items.CRIMSON_PLANKS);
-			generateRecipe(recipeConsumer, JunkRegistry.WARPED_DRAWER.get(), Items.WARPED_PLANKS);
+		protected void buildRecipes(RecipeOutput recipeOutput) {
+			generateRecipe(recipeOutput, JunkRegistry.OAK_DRAWER.get(), Items.OAK_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.SPRUCE_DRAWER.get(), Items.SPRUCE_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.BIRCH_DRAWER.get(), Items.BIRCH_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.JUNGLE_DRAWER.get(), Items.JUNGLE_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.ACACIA_DRAWER.get(), Items.ACACIA_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.CHERRY_DRAWER.get(), Items.CHERRY_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.DARK_OAK_DRAWER.get(), Items.DARK_OAK_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.MANGROVE_DRAWER.get(), Items.MANGROVE_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.BAMBOO_DRAWER.get(), Items.BAMBOO_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.CRIMSON_DRAWER.get(), Items.CRIMSON_PLANKS);
+			generateRecipe(recipeOutput, JunkRegistry.WARPED_DRAWER.get(), Items.WARPED_PLANKS);
 		}
 
-		private void generateRecipe(Consumer<FinishedRecipe> recipeConsumer, ItemLike drawer, Item planks) {
+		private void generateRecipe(RecipeOutput recipeOutput, ItemLike drawer, Item planks) {
 			ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, drawer)
 					.pattern("PCP").pattern("P P").pattern("PCP")
 					.define('P', planks)
 					.define('C', Tags.Items.CHESTS_WOODEN)
 					.unlockedBy("has_chest", has(Tags.Items.CHESTS_WOODEN))
-					.unlockedBy("has_planks", has(planks)).save(recipeConsumer);
+					.unlockedBy("has_planks", has(planks)).save(recipeOutput);
 		}
 	}
 
@@ -193,7 +196,7 @@ public class JunkDatagen {
 
 			@Override
 			protected Iterable<Block> getKnownBlocks() {
-				return (Iterable<Block>) JunkRegistry.BLOCKS.getEntries().stream().map(RegistryObject::get)::iterator;
+				return (Iterable<Block>) JunkRegistry.BLOCKS.getEntries().stream().map(holder -> (Block) holder.get())::iterator;
 			}
 		}
 
@@ -224,7 +227,7 @@ public class JunkDatagen {
 			makeAnotherDrawer(JunkRegistry.WARPED_DRAWER);
 		}
 
-		private void makeDrawer(RegistryObject<Block> registryObject) {
+		private void makeDrawer(DeferredBlock<DrawerBlock> registryObject) {
 			ModelFile model = models().getExistingFile(modLoc("block/" + registryObject.getId().getPath()));
 			getVariantBuilder(registryObject.get())
 					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
@@ -237,7 +240,7 @@ public class JunkDatagen {
 					.modelForState().modelFile(model).rotationY(270).addModel();
 		}
 
-		private void makeAnotherDrawer(RegistryObject<Block> registryObject) {
+		private void makeAnotherDrawer(DeferredBlock<DrawerBlock> registryObject) {
 			ResourceLocation texture = modLoc("block/" + registryObject.getId().getPath());
 			ModelFile model = models().getBuilder(registryObject.getId().getPath())
 					.parent(models().getExistingFile(modLoc("block/drawer")))

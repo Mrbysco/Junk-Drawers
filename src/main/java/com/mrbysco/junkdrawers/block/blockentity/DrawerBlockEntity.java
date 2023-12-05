@@ -20,10 +20,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
+import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.common.capabilities.Capability;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 
@@ -69,7 +69,8 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 
 	@Override
 	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-		load(pkt.getTag());
+		if (pkt.getTag() != null)
+			load(pkt.getTag());
 
 		BlockState state = level.getBlockState(getBlockPos());
 		level.sendBlockUpdated(getBlockPos(), state, state, 3);
@@ -123,7 +124,7 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 
 	@Override
 	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-		if (capability == ForgeCapabilities.ITEM_HANDLER) {
+		if (!this.remove && capability == Capabilities.ITEM_HANDLER) {
 			return stackHolder.cast();
 		}
 		return super.getCapability(capability, facing);
@@ -138,6 +139,6 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	@Override
 	public void reviveCaps() {
 		super.reviveCaps();
-		this.stackHolder = net.minecraftforge.common.util.LazyOptional.of(() -> handler);
+		this.stackHolder = LazyOptional.of(() -> handler);
 	}
 }
