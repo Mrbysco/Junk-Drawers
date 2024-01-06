@@ -16,6 +16,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -42,18 +44,18 @@ public class JunkRegistry {
 	public static final DeferredHolder<SoundEvent, SoundEvent> DRAWER_JAMMED = SOUND_EVENTS.register("drawer.jammed", () ->
 			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.jammed")));
 
-	public static final DeferredBlock<DrawerBlock> OAK_DRAWER = createDrawer("drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.OAK_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> SPRUCE_DRAWER = createDrawer("spruce_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.SPRUCE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> BIRCH_DRAWER = createDrawer("birch_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.BIRCH_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> JUNGLE_DRAWER = createDrawer("jungle_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.JUNGLE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> ACACIA_DRAWER = createDrawer("acacia_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.ACACIA_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> CHERRY_DRAWER = createDrawer("cherry_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.CHERRY_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> DARK_OAK_DRAWER = createDrawer("dark_oak_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.DARK_OAK_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> MANGROVE_DRAWER = createDrawer("mangrove_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.MANGROVE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> BAMBOO_DRAWER = createDrawer("bamboo_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.BAMBOO_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> OAK_DRAWER = createDrawer("drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.OAK_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> SPRUCE_DRAWER = createDrawer("spruce_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> BIRCH_DRAWER = createDrawer("birch_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.BIRCH_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> JUNGLE_DRAWER = createDrawer("jungle_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.JUNGLE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> ACACIA_DRAWER = createDrawer("acacia_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.ACACIA_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> CHERRY_DRAWER = createDrawer("cherry_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.CHERRY_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> DARK_OAK_DRAWER = createDrawer("dark_oak_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.DARK_OAK_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> MANGROVE_DRAWER = createDrawer("mangrove_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.MANGROVE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> BAMBOO_DRAWER = createDrawer("bamboo_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.BAMBOO_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
 
-	public static final DeferredBlock<DrawerBlock> CRIMSON_DRAWER = createDrawer("crimson_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.CRIMSON_PLANKS).strength(2.5F).sound(SoundType.NETHER_WOOD).noOcclusion()));
-	public static final DeferredBlock<DrawerBlock> WARPED_DRAWER = createDrawer("warped_drawer", () -> new DrawerBlock(Block.Properties.copy(Blocks.WARPED_PLANKS).strength(2.5F).sound(SoundType.NETHER_WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> CRIMSON_DRAWER = createDrawer("crimson_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.CRIMSON_PLANKS).strength(2.5F).sound(SoundType.NETHER_WOOD).noOcclusion()));
+	public static final DeferredBlock<DrawerBlock> WARPED_DRAWER = createDrawer("warped_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.WARPED_PLANKS).strength(2.5F).sound(SoundType.NETHER_WOOD).noOcclusion()));
 
 	public static <T extends Block> DeferredBlock<T> createDrawer(String name, Supplier<T> blockSupplier) {
 		DeferredBlock<T> drawer = BLOCKS.register(name, blockSupplier);
@@ -77,5 +79,9 @@ public class JunkRegistry {
 					JunkRegistry.DARK_OAK_DRAWER.get(), JunkRegistry.MANGROVE_DRAWER.get(), JunkRegistry.BAMBOO_DRAWER.get(),
 					JunkRegistry.CRIMSON_DRAWER.get(), JunkRegistry.WARPED_DRAWER.get()).build(null));
 
+
+	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DRAWER_BLOCK_ENTITY.get(), DrawerBlockEntity::getHandler);
+	}
 
 }

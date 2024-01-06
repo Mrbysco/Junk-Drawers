@@ -23,6 +23,7 @@ public class RandomizedItemStackHandler extends ItemStackHandler {
 
 	public void randomizeInventory() {
 		Map<Integer, ItemStack> contents = new HashMap<>();
+
 		for (int i = 0; i < getSlots(); i++) {
 			contents.put(i, getStackInSlot(i));
 			validateSlotIndex(i);

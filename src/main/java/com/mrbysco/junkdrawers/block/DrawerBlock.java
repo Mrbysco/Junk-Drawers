@@ -1,13 +1,14 @@
 package com.mrbysco.junkdrawers.block;
 
+import com.mojang.serialization.MapCodec;
 import com.mrbysco.junkdrawers.block.blockentity.DrawerBlockEntity;
+import com.mrbysco.junkdrawers.block.blockentity.RandomizedItemStackHandler;
 import com.mrbysco.junkdrawers.config.JunkConfig;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
@@ -35,13 +36,14 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemStackHandler;
-import net.neoforged.neoforge.network.NetworkHooks;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
+	public static final MapCodec<DrawerBlock> CODEC = simpleCodec(DrawerBlock::new);
+
 	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 	public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -50,6 +52,11 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 	public DrawerBlock(Properties builder) {
 		super(builder);
 		this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WATERLOGGED, Boolean.valueOf(false)));
+	}
+
+	@Override
+	protected MapCodec<? extends BaseEntityBlock> codec() {
+		return CODEC;
 	}
 
 	@Nullable
@@ -67,15 +74,18 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 			} else if (level.isClientSide) {
 				return InteractionResult.SUCCESS;
 			} else {
-				drawerBlockEntity.handler.randomizeInventory();
-				drawerBlockEntity.refreshClient();
-				float percentageFilled = getFillPercentage(drawerBlockEntity.handler);
-				if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.random.nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
-					level.playSound(null, pos, JunkRegistry.DRAWER_JAMMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-					player.displayClientMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
-				} else {
-					level.playSound(null, pos, JunkRegistry.DRAWER_OPEN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-					NetworkHooks.openScreen((ServerPlayer) player, drawerBlockEntity, pos);
+				IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+				if (handler instanceof RandomizedItemStackHandler randomizedItemStackHandler) {
+					randomizedItemStackHandler.randomizeInventory();
+					drawerBlockEntity.refreshClient();
+					float percentageFilled = getFillPercentage(randomizedItemStackHandler);
+					if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.random.nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
+						level.playSound(null, pos, JunkRegistry.DRAWER_JAMMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						player.displayClientMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
+					} else {
+						level.playSound(null, pos, JunkRegistry.DRAWER_OPEN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+						player.openMenu(drawerBlockEntity, pos);
+					}
 				}
 				PiglinAi.angerNearbyPiglins(player, true);
 				return InteractionResult.CONSUME;
@@ -105,13 +115,11 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
 		if (!state.is(newState.getBlock())) {
-			BlockEntity blockentity = level.getBlockEntity(pos);
-			if (blockentity instanceof DrawerBlockEntity) {
-				blockentity.getCapability(Capabilities.ITEM_HANDLER).ifPresent(handler -> {
-					for (int i = 0; i < handler.getSlots(); ++i) {
-						Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
-					}
-				});
+			IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+			if (handler != null) {
+				for (int i = 0; i < handler.getSlots(); ++i) {
+					Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
+				}
 			}
 
 			super.onRemove(state, level, pos, newState, isMoving);

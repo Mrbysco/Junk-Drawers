@@ -14,8 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class DrawerMenu extends AbstractContainerMenu {
@@ -44,12 +44,12 @@ public class DrawerMenu extends AbstractContainerMenu {
 		this.drawerPos = drawerBlockEntity.getBlockPos();
 		int i = (2 - 4) * 18;
 
-		//Inventory
-		if (drawerBE.handler != null) {
+		IItemHandler handler = drawerBE.getHandler(null);
+		if (handler != null) {
 			int rows = 10;
 			for (int j = 0; j < rows; ++j) {
 				for (int k = 0; k < 9; ++k) {
-					this.addSlot(new InvisibleSlot(drawerBE.handler, k + j * 9, 8 + k * 18, 18 + j * 18));
+					this.addSlot(new InvisibleSlot(handler, k + j * 9, 8 + k * 18, 18 + j * 18));
 				}
 			}
 		}
@@ -75,7 +75,7 @@ public class DrawerMenu extends AbstractContainerMenu {
 	}
 
 	@Override
-	@Nonnull
+	@NotNull
 	public ItemStack quickMoveStack(Player playerIn, int index) {
 		ItemStack itemstack = ItemStack.EMPTY;
 		Slot slot = this.slots.get(index);
@@ -115,7 +115,7 @@ public class DrawerMenu extends AbstractContainerMenu {
 		return this.drawerBE.stillValid(playerIn) && !playerIn.isSpectator();
 	}
 
-	public class InvisibleSlot extends SlotItemHandler {
+	public static class InvisibleSlot extends SlotItemHandler {
 		private final int index;
 
 		public InvisibleSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
@@ -129,7 +129,7 @@ public class DrawerMenu extends AbstractContainerMenu {
 		}
 
 		@Override
-		public boolean mayPlace(@Nonnull ItemStack stack) {
+		public boolean mayPlace(@NotNull ItemStack stack) {
 			return super.mayPlace(stack);
 		}
 	}

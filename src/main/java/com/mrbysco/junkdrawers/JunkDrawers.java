@@ -10,7 +10,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -21,8 +20,7 @@ public class JunkDrawers {
 	public static final String MOD_ID = "junkdrawers";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
-	public JunkDrawers() {
-		IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+	public JunkDrawers(IEventBus eventBus) {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JunkConfig.commonSpec);
 		eventBus.register(JunkConfig.class);
 
@@ -34,6 +32,7 @@ public class JunkDrawers {
 		JunkRegistry.MENU_TYPES.register(eventBus);
 
 		eventBus.addListener(this::buildCreativeContents);
+		eventBus.addListener(JunkRegistry::registerCapabilities);
 
 		if (FMLEnvironment.dist.isClient()) {
 			eventBus.addListener(ClientHandler::onClientSetup);

@@ -41,6 +41,5 @@
     "recipes": [
       "junkdrawers:birch_drawer"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

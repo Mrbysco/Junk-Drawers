@@ -41,6 +41,5 @@
     "recipes": [
       "junkdrawers:acacia_drawer"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

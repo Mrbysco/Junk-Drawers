@@ -41,6 +41,5 @@
     "recipes": [
       "junkdrawers:spruce_drawer"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

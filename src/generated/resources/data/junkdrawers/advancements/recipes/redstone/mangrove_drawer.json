@@ -41,6 +41,5 @@
     "recipes": [
       "junkdrawers:mangrove_drawer"
     ]
-  },
-  "sends_telemetry_event": false
+  }
 }

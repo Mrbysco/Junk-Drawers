@@ -20,12 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.capabilities.Capabilities;
-import net.neoforged.neoforge.common.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.items.IItemHandler;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	public final RandomizedItemStackHandler handler = new RandomizedItemStackHandler(90) {
@@ -38,7 +33,6 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 			refreshClient();
 		}
 	};
-	private LazyOptional<IItemHandler> stackHolder = LazyOptional.of(() -> handler);
 
 	public DrawerBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state) {
 		super(blockEntityType, pos, state);
@@ -65,6 +59,10 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	public void saveAdditional(CompoundTag compound) {
 		super.saveAdditional(compound);
 		compound.put("ItemStackHandler", handler.serializeNBT());
+	}
+
+	public RandomizedItemStackHandler getHandler(@Nullable Direction direction) {
+		return handler;
 	}
 
 	@Override
@@ -120,25 +118,5 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	@Override
 	public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
 		return new DrawerMenu(id, inventory, this);
-	}
-
-	@Override
-	public <T> LazyOptional<T> getCapability(Capability<T> capability, Direction facing) {
-		if (!this.remove && capability == Capabilities.ITEM_HANDLER) {
-			return stackHolder.cast();
-		}
-		return super.getCapability(capability, facing);
-	}
-
-	@Override
-	public void invalidateCaps() {
-		super.invalidateCaps();
-		this.stackHolder.invalidate();
-	}
-
-	@Override
-	public void reviveCaps() {
-		super.reviveCaps();
-		this.stackHolder = LazyOptional.of(() -> handler);
 	}
 }
