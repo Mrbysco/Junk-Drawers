@@ -78,9 +78,9 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
-		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt, lookupProvider);
-		return nbt;
+		CompoundTag tag = new CompoundTag();
+		this.saveAdditional(tag, lookupProvider);
+		return tag;
 	}
 
 	@Override
