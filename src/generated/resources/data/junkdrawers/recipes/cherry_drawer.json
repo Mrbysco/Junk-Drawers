@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     "P": {
       "item": "minecraft:cherry_planks"
@@ -15,6 +15,7 @@
     "PCP"
   ],
   "result": {
-    "item": "junkdrawers:cherry_drawer"
+    "count": 1,
+    "id": "junkdrawers:cherry_drawer"
   }
 }

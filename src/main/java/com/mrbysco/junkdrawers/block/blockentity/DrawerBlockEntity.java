@@ -6,6 +6,8 @@ import com.mrbysco.junkdrawers.menu.DrawerMenu;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.registries.VanillaRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -50,15 +52,15 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	@Override
-	public void load(CompoundTag compound) {
-		super.load(compound);
-		handler.deserializeNBT(compound.getCompound("ItemStackHandler"));
+	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.loadAdditional(compound, lookupProvider);
+		handler.deserializeNBT(lookupProvider, compound.getCompound("ItemStackHandler"));
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound) {
-		super.saveAdditional(compound);
-		compound.put("ItemStackHandler", handler.serializeNBT());
+	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
+		super.saveAdditional(compound, lookupProvider);
+		compound.put("ItemStackHandler", handler.serializeNBT(lookupProvider));
 	}
 
 	public RandomizedItemStackHandler getHandler(@Nullable Direction direction) {
@@ -66,25 +68,25 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
 		if (pkt.getTag() != null)
-			load(pkt.getTag());
+			loadAdditional(pkt.getTag(), lookupProvider);
 
 		BlockState state = level.getBlockState(getBlockPos());
 		level.sendBlockUpdated(getBlockPos(), state, state, 3);
 	}
 
 	@Override
-	public CompoundTag getUpdateTag() {
+	public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
 		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt);
+		this.saveAdditional(nbt, lookupProvider);
 		return nbt;
 	}
 
 	@Override
 	public CompoundTag getPersistentData() {
 		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt);
+		this.saveAdditional(nbt, this.level != null ? this.level.registryAccess() : VanillaRegistries.createLookup());
 		return nbt;
 	}
 

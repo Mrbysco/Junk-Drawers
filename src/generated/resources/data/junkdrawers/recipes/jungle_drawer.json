@@ -3,7 +3,7 @@
   "category": "redstone",
   "key": {
     "C": {
-      "tag": "forge:chests/wooden"
+      "tag": "c:chests/wooden"
     },
     "P": {
       "item": "minecraft:jungle_planks"
@@ -15,6 +15,7 @@
     "PCP"
   ],
   "result": {
-    "item": "junkdrawers:jungle_drawer"
+    "count": 1,
+    "id": "junkdrawers:jungle_drawer"
   }
 }

@@ -6,11 +6,11 @@ import com.mrbysco.junkdrawers.config.JunkConfig;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import org.slf4j.Logger;
@@ -20,8 +20,8 @@ public class JunkDrawers {
 	public static final String MOD_ID = "junkdrawers";
 	public static final Logger LOGGER = LogUtils.getLogger();
 
-	public JunkDrawers(IEventBus eventBus) {
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, JunkConfig.commonSpec);
+	public JunkDrawers(IEventBus eventBus, Dist dist, ModContainer container) {
+		container.registerConfig(ModConfig.Type.COMMON, JunkConfig.commonSpec);
 		eventBus.register(JunkConfig.class);
 
 		JunkRegistry.BLOCKS.register(eventBus);
@@ -34,7 +34,7 @@ public class JunkDrawers {
 		eventBus.addListener(this::buildCreativeContents);
 		eventBus.addListener(JunkRegistry::registerCapabilities);
 
-		if (FMLEnvironment.dist.isClient()) {
+		if (dist.isClient()) {
 			eventBus.addListener(ClientHandler::onClientSetup);
 		}
 	}
