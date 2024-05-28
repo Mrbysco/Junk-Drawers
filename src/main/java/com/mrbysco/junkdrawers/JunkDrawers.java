@@ -35,7 +35,7 @@ public class JunkDrawers {
 		eventBus.addListener(JunkRegistry::registerCapabilities);
 
 		if (dist.isClient()) {
-			eventBus.addListener(ClientHandler::onClientSetup);
+			eventBus.addListener(ClientHandler::onMenuRegister);
 		}
 	}
 
