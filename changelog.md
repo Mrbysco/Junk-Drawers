@@ -1,1 +1,1 @@
-* Initial update to 1.20.6
+* Fix Drawer gui not opening on right-click
