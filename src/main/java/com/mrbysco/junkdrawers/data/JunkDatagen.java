@@ -132,7 +132,7 @@ public class JunkDatagen {
 		}
 
 		public ResourceLocation modLoc(String name) {
-			return new ResourceLocation(JunkDrawers.MOD_ID, name);
+			return ResourceLocation.fromNamespaceAndPath(JunkDrawers.MOD_ID, name);
 		}
 	}
 
@@ -176,8 +176,8 @@ public class JunkDatagen {
 
 		public static class JunkBlockTables extends BlockLootSubProvider {
 
-			protected JunkBlockTables() {
-				super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+			protected JunkBlockTables(HolderLookup.Provider provider) {
+				super(Set.of(), FeatureFlags.REGISTRY.allFlags(), provider);
 			}
 
 			@Override

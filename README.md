@@ -21,7 +21,7 @@ The sounds used are the following: [Open](https://freesound.org/s/486081/),
 
 ## License ##
 * Junk Drawers is licensed under the MIT License
-  - (c) 2022 Mrbysco
+  - (c) 2024 Mrbysco
   - [![License](https://img.shields.io/badge/License-MIT-red.svg?style=flat)](http://opensource.org/licenses/MIT)
 
 ## Downloads ##

@@ -38,11 +38,11 @@ public class JunkRegistry {
 			IMenuTypeExtension.create(DrawerMenu::new));
 
 	public static final DeferredHolder<SoundEvent, SoundEvent> DRAWER_OPEN = SOUND_EVENTS.register("drawer.open", () ->
-			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.open")));
+			SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(JunkDrawers.MOD_ID, "drawer.open")));
 	public static final DeferredHolder<SoundEvent, SoundEvent> DRAWER_CLOSE = SOUND_EVENTS.register("drawer.close", () ->
-			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.close")));
+			SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(JunkDrawers.MOD_ID, "drawer.close")));
 	public static final DeferredHolder<SoundEvent, SoundEvent> DRAWER_JAMMED = SOUND_EVENTS.register("drawer.jammed", () ->
-			SoundEvent.createVariableRangeEvent(new ResourceLocation(JunkDrawers.MOD_ID, "drawer.jammed")));
+			SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(JunkDrawers.MOD_ID, "drawer.jammed")));
 
 	public static final DeferredBlock<DrawerBlock> OAK_DRAWER = createDrawer("drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.OAK_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
 	public static final DeferredBlock<DrawerBlock> SPRUCE_DRAWER = createDrawer("spruce_drawer", () -> new DrawerBlock(Block.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS).strength(2.5F).sound(SoundType.WOOD).noOcclusion()));
