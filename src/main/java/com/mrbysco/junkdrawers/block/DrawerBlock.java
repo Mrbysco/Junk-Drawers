@@ -65,7 +65,8 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 		return new DrawerBlockEntity(pos, state);
 	}
 
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hitResult) {
+	@Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
 		BlockEntity blockEntity = level.getBlockEntity(pos);
 		if (blockEntity instanceof DrawerBlockEntity drawerBlockEntity) {
 			BlockPos blockpos = pos.above();
@@ -91,7 +92,7 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 				return InteractionResult.CONSUME;
 			}
 		} else {
-			return InteractionResult.sidedSuccess(level.isClientSide);
+			return super.useWithoutItem(state, level, pos, player, hitResult);
 		}
 	}
 
