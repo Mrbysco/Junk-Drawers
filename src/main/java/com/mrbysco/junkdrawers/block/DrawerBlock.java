@@ -114,11 +114,10 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 	@SuppressWarnings("deprecation")
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!state.is(newState.getBlock())) {
-			IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
-			if (handler != null) {
-				for (int i = 0; i < handler.getSlots(); ++i) {
-					Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), handler.getStackInSlot(i));
+		if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof DrawerBlockEntity drawerBlockEntity) {
+			if (drawerBlockEntity.handler != null) {
+				for (int i = 0; i < drawerBlockEntity.handler.getSlots(); ++i) {
+					Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), drawerBlockEntity.handler.getStackInSlot(i));
 				}
 			}
 
