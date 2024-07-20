@@ -17,8 +17,8 @@ public class JunkConfig {
 					.push("general");
 
 			this.randomizeOnContentChange = builder
-					.comment("Randomize the drawer inventory when the content changes [Default: true]")
-					.define("randomizeOnChange", true);
+					.comment("Randomize the drawer inventory when the content changes (This might have unexpected consequences) [Default: false]")
+					.define("randomizeOnChange", false);
 
 			this.jamPercentage = builder
 					.comment("The percentage of the drawer that needs to be filled for the inventory to jam [Default: 0.9 (90%)]")
