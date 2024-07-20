@@ -99,6 +99,11 @@ public class JunkDatagen {
 			addSubtitle(JunkRegistry.DRAWER_OPEN, "Drawer Opens");
 			addSubtitle(JunkRegistry.DRAWER_CLOSE, "Drawer Closes");
 			addSubtitle(JunkRegistry.DRAWER_JAMMED, "Drawer Jammed");
+
+			add("junkdrawers.configuration.general", "General");
+			add("junkdrawers.configuration.randomizeOnChange", "Randomize the drawer inventory when the content changes (This might have unexpected consequences) [Default: false]");
+			add("junkdrawers.configuration.jamPercentage", "The percentage of the drawer that needs to be filled for the inventory to jam [Default: 0.9 (90%)]");
+			add("junkdrawers.configuration.jamChance", "The chance the drawer jams when the 'jamPercentage' is met [Default: 0.3 (30%)]");
 		}
 
 		public void addSubtitle(Supplier<SoundEvent> sound, String name) {
