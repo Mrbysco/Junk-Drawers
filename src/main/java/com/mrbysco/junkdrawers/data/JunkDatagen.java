@@ -16,6 +16,7 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
@@ -32,11 +33,13 @@ import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Set;
@@ -56,6 +59,7 @@ public class JunkDatagen {
 		if (event.includeServer()) {
 			generator.addProvider(true, new JunkLoot(packOutput, lookupProvider));
 			generator.addProvider(true, new JunkRecipeProvider(packOutput, lookupProvider));
+			generator.addProvider(true, new JunkBlockTagsProvider(packOutput, lookupProvider, helper));
 		}
 		if (event.includeClient()) {
 			generator.addProvider(true, new JunkLanguageProvider(packOutput));
@@ -205,6 +209,20 @@ public class JunkDatagen {
 		@Override
 		protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
 			super.validate(writableregistry, validationcontext, problemreporter$collector);
+		}
+	}
+
+	private static class JunkBlockTagsProvider extends BlockTagsProvider {
+		public JunkBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
+			super(output, lookupProvider, JunkDrawers.MOD_ID, existingFileHelper);
+		}
+
+		@Override
+		protected void addTags(HolderLookup.Provider provider) {
+			this.tag(BlockTags.MINEABLE_WITH_AXE).add(JunkRegistry.OAK_DRAWER.get(), JunkRegistry.SPRUCE_DRAWER.get(),
+				JunkRegistry.BIRCH_DRAWER.get(), JunkRegistry.JUNGLE_DRAWER.get(), JunkRegistry.ACACIA_DRAWER.get(),
+				JunkRegistry.CHERRY_DRAWER.get(), JunkRegistry.DARK_OAK_DRAWER.get(), JunkRegistry.MANGROVE_DRAWER.get(),
+				JunkRegistry.BAMBOO_DRAWER.get(), JunkRegistry.CRIMSON_DRAWER.get(), JunkRegistry.WARPED_DRAWER.get());
 		}
 	}
 
