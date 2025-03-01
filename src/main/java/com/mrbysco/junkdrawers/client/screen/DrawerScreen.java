@@ -16,12 +16,12 @@ public class DrawerScreen extends AbstractContainerScreen<DrawerMenu> {
 		int i = 222;
 		int j = 114;
 		this.containerRows = 2;
-		this.imageHeight = 114 + this.containerRows * 18;
+		this.imageHeight = j + this.containerRows * 18;
+		this.imageWidth = i;
 		this.inventoryLabelY = this.imageHeight - 94;
 	}
 
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-		this.renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
 		super.render(guiGraphics, mouseX, mouseY, partialTicks);
 		this.renderTooltip(guiGraphics, mouseX, mouseY);
 	}
