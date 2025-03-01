@@ -1,1 +1,1 @@
-* Fix gui background being rendered twice
+* Fix the built-in config option names/descriptions
