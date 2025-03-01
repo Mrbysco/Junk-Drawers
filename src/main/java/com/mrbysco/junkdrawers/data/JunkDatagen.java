@@ -100,19 +100,43 @@ public class JunkDatagen {
 			addSubtitle(JunkRegistry.DRAWER_CLOSE, "Drawer Closes");
 			addSubtitle(JunkRegistry.DRAWER_JAMMED, "Drawer Jammed");
 
-			add("junkdrawers.configuration.general", "General");
-			add("junkdrawers.configuration.randomizeOnChange", "Randomize the drawer inventory when the content changes (This might have unexpected consequences) [Default: false]");
-			add("junkdrawers.configuration.jamPercentage", "The percentage of the drawer that needs to be filled for the inventory to jam [Default: 0.9 (90%)]");
-			add("junkdrawers.configuration.jamChance", "The chance the drawer jams when the 'jamPercentage' is met [Default: 0.3 (30%)]");
+			addConfig("general", "General", "General Settings");
+			addConfig("randomizeOnChange", "Randomize On Change", "Randomize the drawer inventory when the content changes (This might have unexpected consequences) [Default: false]");
+			addConfig("jamPercentage", "Jam percentage", "The percentage of the drawer that needs to be filled for the inventory to jam [Default: 0.9 (90%)]");
+			addConfig("jamChance", "Jam Chance", "The chance the drawer jams when the 'jamPercentage' is met [Default: 0.3 (30%)]");
 		}
 
-		public void addSubtitle(Supplier<SoundEvent> sound, String name) {
-			this.addSubtitle(sound.get(), name);
+		/**
+		 * Add a subtitle to a sound event
+		 *
+		 * @param sound The sound event
+		 * @param text  The subtitle text
+		 */
+		public void addSubtitle(Supplier<SoundEvent> sound, String text) {
+			this.addSubtitle(sound.get(), text);
 		}
 
-		public void addSubtitle(SoundEvent sound, String name) {
+		/**
+		 * Add a subtitle to a sound event
+		 *
+		 * @param sound The sound event registry object
+		 * @param text  The subtitle text
+		 */
+		public void addSubtitle(SoundEvent sound, String text) {
 			String path = JunkDrawers.MOD_ID + ".subtitle." + sound.getLocation().getPath();
-			this.add(path, name);
+			this.add(path, text);
+		}
+		/**
+		 * Add the translation for a config entry
+		 *
+		 * @param path        The path of the config entry
+		 * @param name        The name of the config entry
+		 * @param description The description of the config entry (optional in case of targeting "title" or similar entries that have no tooltip)
+		 */
+		private void addConfig(String path, String name, @Nullable String description) {
+			this.add(JunkDrawers.MOD_ID + ".configuration." + path, name);
+			if (description != null && !description.isEmpty())
+				this.add(JunkDrawers.MOD_ID + ".configuration." + path + ".tooltip", description);
 		}
 	}
 
