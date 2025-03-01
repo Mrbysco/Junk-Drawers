@@ -21,6 +21,6 @@ side="BOTH"
 [[dependencies.junkdrawers]]
 modId="neoforge"
 type="REQUIRED"
-versionRange="[21.0.96-beta,)"
+versionRange="[21.0.143,)"
 ordering="NONE"
 side="BOTH"
