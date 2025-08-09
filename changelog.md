@@ -1,1 +1,1 @@
-* Fix the built-in config option names/descriptions
+* Update to 1.21.4
