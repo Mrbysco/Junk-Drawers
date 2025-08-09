@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import com.mrbysco.junkdrawers.client.ClientHandler;
 import com.mrbysco.junkdrawers.config.JunkConfig;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.neoforged.api.distmarker.Dist;
@@ -48,5 +49,9 @@ public class JunkDrawers {
 				event.accept(itemRegistryObject.get());
 			}
 		}
+	}
+
+	public static ResourceLocation modLoc(String path) {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
 	}
 }

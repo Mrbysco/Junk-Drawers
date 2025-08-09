@@ -3,8 +3,18 @@ package com.mrbysco.junkdrawers.data;
 import com.mrbysco.junkdrawers.JunkDrawers;
 import com.mrbysco.junkdrawers.block.DrawerBlock;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
-import net.minecraft.core.Direction;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
+import net.minecraft.client.data.models.ModelProvider;
+import net.minecraft.client.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.client.data.models.blockstates.Variant;
+import net.minecraft.client.data.models.blockstates.VariantProperties;
+import net.minecraft.client.data.models.model.ModelTemplate;
+import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.client.data.models.model.TextureSlot;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -13,7 +23,6 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
@@ -23,22 +32,18 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
-import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
-import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
-import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.common.data.LanguageProvider;
 import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -50,23 +55,18 @@ import java.util.function.Supplier;
 public class JunkDatagen {
 
 	@SubscribeEvent
-	public static void gatherData(GatherDataEvent event) {
+	public static void gatherData(GatherDataEvent.Client event) {
 		DataGenerator generator = event.getGenerator();
 		PackOutput packOutput = generator.getPackOutput();
-		ExistingFileHelper helper = event.getExistingFileHelper();
 		CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
-		if (event.includeServer()) {
-			generator.addProvider(true, new JunkLoot(packOutput, lookupProvider));
-			generator.addProvider(true, new JunkRecipeProvider(packOutput, lookupProvider));
-			generator.addProvider(true, new JunkBlockTagsProvider(packOutput, lookupProvider, helper));
-		}
-		if (event.includeClient()) {
-			generator.addProvider(true, new JunkLanguageProvider(packOutput));
-			generator.addProvider(true, new JunkSoundProvider(packOutput, helper));
-			generator.addProvider(true, new JunkBlockstateProvider(packOutput, helper));
-			generator.addProvider(true, new JunkItemModelProvider(packOutput, helper));
-		}
+		generator.addProvider(true, new JunkLoot(packOutput, lookupProvider));
+		generator.addProvider(true, new JunkRecipeProvider.Runner(packOutput, lookupProvider));
+		generator.addProvider(true, new JunkBlockTagsProvider(packOutput, lookupProvider));
+
+		generator.addProvider(true, new JunkLanguageProvider(packOutput));
+		generator.addProvider(true, new JunkSoundProvider(packOutput));
+		generator.addProvider(true, new JunkModelProvider(packOutput));
 	}
 
 	private static class JunkLanguageProvider extends LanguageProvider {
@@ -123,7 +123,7 @@ public class JunkDatagen {
 		 * @param text  The subtitle text
 		 */
 		public void addSubtitle(SoundEvent sound, String text) {
-			String path = JunkDrawers.MOD_ID + ".subtitle." + sound.getLocation().getPath();
+			String path = JunkDrawers.MOD_ID + ".subtitle." + sound.location().getPath();
 			this.add(path, text);
 		}
 		/**
@@ -142,8 +142,8 @@ public class JunkDatagen {
 
 	public static class JunkSoundProvider extends SoundDefinitionsProvider {
 
-		public JunkSoundProvider(PackOutput packOutput, ExistingFileHelper existingFileHelper) {
-			super(packOutput, JunkDrawers.MOD_ID, existingFileHelper);
+		public JunkSoundProvider(PackOutput packOutput) {
+			super(packOutput, JunkDrawers.MOD_ID);
 		}
 
 		@Override
@@ -165,38 +165,54 @@ public class JunkDatagen {
 		}
 
 		public ResourceLocation modLoc(String name) {
-			return ResourceLocation.fromNamespaceAndPath(JunkDrawers.MOD_ID, name);
+			return JunkDrawers.modLoc(name);
 		}
 	}
 
 	private static class JunkRecipeProvider extends RecipeProvider {
 
-		public JunkRecipeProvider(PackOutput packOutput, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-			super(packOutput, lookupProvider);
+		public JunkRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
+			super(provider, recipeOutput);
 		}
 
 		@Override
-		protected void buildRecipes(RecipeOutput recipeOutput) {
-			generateRecipe(recipeOutput, JunkRegistry.OAK_DRAWER.get(), Items.OAK_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.SPRUCE_DRAWER.get(), Items.SPRUCE_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.BIRCH_DRAWER.get(), Items.BIRCH_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.JUNGLE_DRAWER.get(), Items.JUNGLE_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.ACACIA_DRAWER.get(), Items.ACACIA_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.CHERRY_DRAWER.get(), Items.CHERRY_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.DARK_OAK_DRAWER.get(), Items.DARK_OAK_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.MANGROVE_DRAWER.get(), Items.MANGROVE_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.BAMBOO_DRAWER.get(), Items.BAMBOO_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.CRIMSON_DRAWER.get(), Items.CRIMSON_PLANKS);
-			generateRecipe(recipeOutput, JunkRegistry.WARPED_DRAWER.get(), Items.WARPED_PLANKS);
+		protected void buildRecipes() {
+			generateRecipe(output, JunkRegistry.OAK_DRAWER.get(), Items.OAK_PLANKS);
+			generateRecipe(output, JunkRegistry.SPRUCE_DRAWER.get(), Items.SPRUCE_PLANKS);
+			generateRecipe(output, JunkRegistry.BIRCH_DRAWER.get(), Items.BIRCH_PLANKS);
+			generateRecipe(output, JunkRegistry.JUNGLE_DRAWER.get(), Items.JUNGLE_PLANKS);
+			generateRecipe(output, JunkRegistry.ACACIA_DRAWER.get(), Items.ACACIA_PLANKS);
+			generateRecipe(output, JunkRegistry.CHERRY_DRAWER.get(), Items.CHERRY_PLANKS);
+			generateRecipe(output, JunkRegistry.DARK_OAK_DRAWER.get(), Items.DARK_OAK_PLANKS);
+			generateRecipe(output, JunkRegistry.MANGROVE_DRAWER.get(), Items.MANGROVE_PLANKS);
+			generateRecipe(output, JunkRegistry.BAMBOO_DRAWER.get(), Items.BAMBOO_PLANKS);
+			generateRecipe(output, JunkRegistry.CRIMSON_DRAWER.get(), Items.CRIMSON_PLANKS);
+			generateRecipe(output, JunkRegistry.WARPED_DRAWER.get(), Items.WARPED_PLANKS);
 		}
 
 		private void generateRecipe(RecipeOutput recipeOutput, ItemLike drawer, Item planks) {
-			ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, drawer)
+			shaped(RecipeCategory.REDSTONE, drawer)
 					.pattern("PCP").pattern("P P").pattern("PCP")
 					.define('P', planks)
 					.define('C', Tags.Items.CHESTS_WOODEN)
 					.unlockedBy("has_chest", has(Tags.Items.CHESTS_WOODEN))
 					.unlockedBy("has_planks", has(planks)).save(recipeOutput);
+		}
+
+		public static class Runner extends RecipeProvider.Runner {
+			public Runner(PackOutput output, CompletableFuture<Provider> completableFuture) {
+				super(output, completableFuture);
+			}
+
+			@Override
+			protected RecipeProvider createRecipeProvider(HolderLookup.Provider provider, RecipeOutput recipeOutput) {
+				return new JunkRecipeProvider(provider, recipeOutput);
+			}
+
+			@Override
+			public String getName() {
+				return "Junk Drawers Recipes";
+			}
 		}
 	}
 
@@ -242,8 +258,8 @@ public class JunkDatagen {
 	}
 
 	private static class JunkBlockTagsProvider extends BlockTagsProvider {
-		public JunkBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
-			super(output, lookupProvider, JunkDrawers.MOD_ID, existingFileHelper);
+		public JunkBlockTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+			super(output, lookupProvider, JunkDrawers.MOD_ID);
 		}
 
 		@Override
@@ -255,81 +271,40 @@ public class JunkDatagen {
 		}
 	}
 
-	private static class JunkBlockstateProvider extends BlockStateProvider {
-		public JunkBlockstateProvider(PackOutput packOutput, ExistingFileHelper helper) {
-			super(packOutput, JunkDrawers.MOD_ID, helper);
+	private static class JunkModelProvider extends ModelProvider {
+		public static final ModelTemplate DRAWER = ModelTemplates.create("junkdrawers:template_drawer", TextureSlot.TEXTURE);
+
+		public JunkModelProvider(PackOutput output) {
+			super(output, JunkDrawers.MOD_ID);
 		}
 
 		@Override
-		protected void registerStatesAndModels() {
-			makeDrawer(JunkRegistry.OAK_DRAWER);
-			makeAnotherDrawer(JunkRegistry.SPRUCE_DRAWER);
-			makeAnotherDrawer(JunkRegistry.BIRCH_DRAWER);
-			makeAnotherDrawer(JunkRegistry.JUNGLE_DRAWER);
-			makeAnotherDrawer(JunkRegistry.ACACIA_DRAWER);
-			makeAnotherDrawer(JunkRegistry.CHERRY_DRAWER);
-			makeAnotherDrawer(JunkRegistry.DARK_OAK_DRAWER);
-			makeAnotherDrawer(JunkRegistry.MANGROVE_DRAWER);
-			makeAnotherDrawer(JunkRegistry.BAMBOO_DRAWER);
+		protected void registerModels(@NotNull BlockModelGenerators blockModels, @NotNull ItemModelGenerators itemModels) {
+			makeDrawer(blockModels, JunkRegistry.OAK_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.SPRUCE_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.BIRCH_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.JUNGLE_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.ACACIA_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.CHERRY_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.DARK_OAK_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.MANGROVE_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.BAMBOO_DRAWER);
 
-			makeAnotherDrawer(JunkRegistry.CRIMSON_DRAWER);
-			makeAnotherDrawer(JunkRegistry.WARPED_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.CRIMSON_DRAWER);
+			makeDrawer(blockModels, JunkRegistry.WARPED_DRAWER);
 		}
 
-		private void makeDrawer(DeferredBlock<DrawerBlock> registryObject) {
-			ModelFile model = models().getExistingFile(modLoc("block/" + registryObject.getId().getPath()));
-			getVariantBuilder(registryObject.get())
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
-					.modelForState().modelFile(model).addModel()
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
-					.modelForState().modelFile(model).rotationY(90).addModel()
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
-					.modelForState().modelFile(model).rotationY(180).addModel()
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST)
-					.modelForState().modelFile(model).rotationY(270).addModel();
-		}
-
-		private void makeAnotherDrawer(DeferredBlock<DrawerBlock> registryObject) {
-			ResourceLocation texture = modLoc("block/" + registryObject.getId().getPath());
-			ModelFile model = models().getBuilder(registryObject.getId().getPath())
-					.parent(models().getExistingFile(modLoc("block/drawer")))
-					.texture("planks", texture)
-					.texture("particle", texture);
-			getVariantBuilder(registryObject.get())
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
-					.modelForState().modelFile(model).addModel()
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.EAST)
-					.modelForState().modelFile(model).rotationY(90).addModel()
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH)
-					.modelForState().modelFile(model).rotationY(180).addModel()
-					.partialState().with(BlockStateProperties.HORIZONTAL_FACING, Direction.WEST)
-					.modelForState().modelFile(model).rotationY(270).addModel();
-		}
-	}
-
-	private static class JunkItemModelProvider extends ItemModelProvider {
-		public JunkItemModelProvider(PackOutput packOutput, ExistingFileHelper helper) {
-			super(packOutput, JunkDrawers.MOD_ID, helper);
-		}
-
-		@Override
-		protected void registerModels() {
-			withBlockParent(JunkRegistry.OAK_DRAWER.getId());
-			withBlockParent(JunkRegistry.SPRUCE_DRAWER.getId());
-			withBlockParent(JunkRegistry.BIRCH_DRAWER.getId());
-			withBlockParent(JunkRegistry.JUNGLE_DRAWER.getId());
-			withBlockParent(JunkRegistry.ACACIA_DRAWER.getId());
-			withBlockParent(JunkRegistry.CHERRY_DRAWER.getId());
-			withBlockParent(JunkRegistry.DARK_OAK_DRAWER.getId());
-			withBlockParent(JunkRegistry.MANGROVE_DRAWER.getId());
-			withBlockParent(JunkRegistry.BAMBOO_DRAWER.getId());
-
-			withBlockParent(JunkRegistry.CRIMSON_DRAWER.getId());
-			withBlockParent(JunkRegistry.WARPED_DRAWER.getId());
-		}
-
-		private void withBlockParent(ResourceLocation location) {
-			withExistingParent(location.getPath(), modLoc("block/" + location.getPath()));
+		private void makeDrawer(BlockModelGenerators blockModels, DeferredBlock<DrawerBlock> registryObject) {
+			ResourceLocation texture = JunkDrawers.modLoc("block/" + registryObject.getId().getPath());
+			ResourceLocation model = DRAWER.create(registryObject.get(), TextureMapping.defaultTexture(texture), blockModels.modelOutput);
+			blockModels.blockStateOutput
+					.accept(
+							MultiVariantGenerator.multiVariant(
+											registryObject.get(), Variant.variant().with(VariantProperties.MODEL, model)
+									)
+									.with(BlockModelGenerators.createHorizontalFacingDispatch())
+					);
+			blockModels.registerSimpleItemModel(registryObject.get(), model);
 		}
 	}
 }

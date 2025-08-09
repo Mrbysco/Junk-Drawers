@@ -2,12 +2,8 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "C": {
-      "tag": "c:chests/wooden"
-    },
-    "P": {
-      "item": "minecraft:warped_planks"
-    }
+    "C": "#c:chests/wooden",
+    "P": "minecraft:warped_planks"
   },
   "pattern": [
     "PCP",

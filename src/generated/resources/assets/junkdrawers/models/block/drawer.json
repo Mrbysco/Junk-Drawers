@@ -1,6 +1,6 @@
 {
   "parent": "junkdrawers:block/template_drawer",
   "textures": {
-    "texture": "junkdrawers:block/dark_oak_drawer"
+    "texture": "junkdrawers:block/drawer"
   }
 }
