@@ -44,7 +44,7 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	@Override
 	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
 		super.loadAdditional(compound, lookupProvider);
-		handler.deserializeNBT(lookupProvider, compound.getCompound("ItemStackHandler"));
+		handler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("ItemStackHandler"));
 	}
 
 	@Override

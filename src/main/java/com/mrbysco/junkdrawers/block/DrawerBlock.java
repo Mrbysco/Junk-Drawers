@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.monster.piglin.PiglinAi;
 import net.minecraft.world.entity.player.Player;
@@ -112,20 +111,6 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 		}
 
 		return 0.0F;
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!state.is(newState.getBlock()) && level.getBlockEntity(pos) instanceof DrawerBlockEntity drawerBlockEntity) {
-			if (drawerBlockEntity.handler != null) {
-				for (int i = 0; i < drawerBlockEntity.handler.getSlots(); ++i) {
-					Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), drawerBlockEntity.handler.getStackInSlot(i));
-				}
-			}
-
-			super.onRemove(state, level, pos, newState, isMoving);
-		}
 	}
 
 	@Override
