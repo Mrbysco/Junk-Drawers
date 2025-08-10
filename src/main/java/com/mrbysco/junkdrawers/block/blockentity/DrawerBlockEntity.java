@@ -12,6 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +20,10 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
@@ -42,15 +47,15 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	@Override
-	public void loadAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.loadAdditional(compound, lookupProvider);
-		handler.deserializeNBT(lookupProvider, compound.getCompoundOrEmpty("ItemStackHandler"));
+	protected void loadAdditional(@NotNull ValueInput input) {
+		super.loadAdditional(input);
+		handler.deserialize(input.childOrEmpty("ItemStackHandler"));
 	}
 
 	@Override
-	public void saveAdditional(CompoundTag compound, HolderLookup.Provider lookupProvider) {
-		super.saveAdditional(compound, lookupProvider);
-		compound.put("ItemStackHandler", handler.serializeNBT(lookupProvider));
+	protected void saveAdditional(@NotNull ValueOutput output) {
+		super.saveAdditional(output);
+		handler.serialize(output.child("ItemStackHandler"));
 	}
 
 	public RandomizedItemStackHandler getHandler(@Nullable Direction direction) {
@@ -58,9 +63,8 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	@Override
-	public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider lookupProvider) {
-		if (pkt.getTag() != null)
-			loadAdditional(pkt.getTag(), lookupProvider);
+	public void onDataPacket(@NotNull Connection net, @NotNull ValueInput valueInput) {
+		super.onDataPacket(net, valueInput);
 
 		BlockState state = level.getBlockState(getBlockPos());
 		level.sendBlockUpdated(getBlockPos(), state, state, 3);
@@ -69,15 +73,24 @@ public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
 		CompoundTag tag = new CompoundTag();
-		this.saveAdditional(tag, lookupProvider);
+		try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(JunkDrawers.LOGGER)) {
+			TagValueOutput output = TagValueOutput.createWithContext(problemreporter$scopedcollector, lookupProvider);
+			this.saveAdditional(output);
+			tag.merge(output.buildResult());
+		}
 		return tag;
 	}
 
 	@Override
 	public CompoundTag getPersistentData() {
-		CompoundTag nbt = new CompoundTag();
-		this.saveAdditional(nbt, this.level != null ? this.level.registryAccess() : VanillaRegistries.createLookup());
-		return nbt;
+		CompoundTag tag = new CompoundTag();
+		try (ProblemReporter.ScopedCollector problemreporter$scopedcollector = new ProblemReporter.ScopedCollector(JunkDrawers.LOGGER)) {
+			HolderLookup.Provider lookupProvider = this.level != null ? this.level.registryAccess() : VanillaRegistries.createLookup();
+			TagValueOutput output = TagValueOutput.createWithContext(problemreporter$scopedcollector, lookupProvider);
+			this.saveAdditional(output);
+			tag.merge(output.buildResult());
+		}
+		return tag;
 	}
 
 	public void refreshClient() {
