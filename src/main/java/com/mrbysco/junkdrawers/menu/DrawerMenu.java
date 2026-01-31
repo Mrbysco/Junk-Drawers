@@ -14,6 +14,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.IndexModifier;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.item.ResourceHandlerSlot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -44,12 +49,15 @@ public class DrawerMenu extends AbstractContainerMenu {
 		this.drawerPos = drawerBlockEntity.getBlockPos();
 		int i = (2 - 4) * 18;
 
-		IItemHandler handler = drawerBE.getHandler(null);
+		ResourceHandler<ItemResource> handler = drawerBE.getHandler(null);
+		if (!(handler instanceof ItemStacksResourceHandler itemHandler))
+			throw new IllegalStateException("Item handler invalid!");
+
 		if (handler != null) {
 			int rows = 10;
 			for (int j = 0; j < rows; ++j) {
 				for (int k = 0; k < 9; ++k) {
-					this.addSlot(new InvisibleSlot(handler, k + j * 9, 8 + k * 18, 18 + j * 18));
+					this.addSlot(new InvisibleSlot(handler, itemHandler::set, k + j * 9, 8 + k * 18, 18 + j * 18));
 				}
 			}
 		}
@@ -115,11 +123,11 @@ public class DrawerMenu extends AbstractContainerMenu {
 		return this.drawerBE.stillValid(playerIn) && !playerIn.isSpectator();
 	}
 
-	public static class InvisibleSlot extends SlotItemHandler {
+	public static class InvisibleSlot extends ResourceHandlerSlot {
 		private final int index;
 
-		public InvisibleSlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-			super(itemHandler, index, xPosition, yPosition);
+		public InvisibleSlot(ResourceHandler<ItemResource> handler, IndexModifier<ItemResource> slotModifier, int index, int xPosition, int yPosition) {
+			super(handler, slotModifier, index, xPosition, yPosition);
 			this.index = index;
 		}
 

@@ -38,8 +38,9 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.Nullable;
 
 public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
@@ -73,20 +74,22 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 			BlockPos blockpos = pos.above();
 			if (level.getBlockState(blockpos).isRedstoneConductor(level, blockpos)) {
 				return InteractionResult.SUCCESS;
-			} else if (level.isClientSide) {
+			} else if (level.isClientSide()) {
 				return InteractionResult.SUCCESS;
 			} else {
-				IItemHandler handler = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+				ResourceHandler<ItemResource> handler = level.getCapability(Capabilities.Item.BLOCK, pos, null);
 				if (handler instanceof RandomizedItemStackHandler randomizedItemStackHandler) {
-					randomizedItemStackHandler.randomizeInventory();
-					drawerBlockEntity.refreshClient();
-					float percentageFilled = getFillPercentage(randomizedItemStackHandler);
-					if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.random.nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
-						level.playSound(null, pos, JunkRegistry.DRAWER_JAMMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-						player.displayClientMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
-					} else {
-						level.playSound(null, pos, JunkRegistry.DRAWER_OPEN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-						player.openMenu(drawerBlockEntity, pos);
+					try (var tx = Transaction.openRoot()) {
+						randomizedItemStackHandler.randomizeInventory(tx);
+						drawerBlockEntity.refreshClient();
+						float percentageFilled = getFillPercentage(randomizedItemStackHandler);
+						if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.random.nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
+							level.playSound(null, pos, JunkRegistry.DRAWER_JAMMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+							player.displayClientMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
+						} else {
+							level.playSound(null, pos, JunkRegistry.DRAWER_OPEN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
+							player.openMenu(drawerBlockEntity, pos);
+						}
 					}
 				}
 				PiglinAi.angerNearbyPiglins((ServerLevel) level, player, true);
@@ -97,12 +100,12 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 		}
 	}
 
-	private float getFillPercentage(ItemStackHandler handler) {
+	private float getFillPercentage(ResourceHandler<ItemResource> handler) {
 		if (handler != null) {
-			int size = handler.getSlots();
+			int size = handler.size();
 			int filledSlots = 0;
 			for (int i = 0; i < size; i++) {
-				if (!handler.getStackInSlot(i).isEmpty()) {
+				if (!handler.getResource(i).isEmpty()) {
 					filledSlots++;
 				}
 			}

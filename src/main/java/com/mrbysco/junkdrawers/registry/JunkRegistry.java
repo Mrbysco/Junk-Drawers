@@ -83,7 +83,7 @@ public class JunkRegistry {
 
 
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-		event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DRAWER_BLOCK_ENTITY.get(), DrawerBlockEntity::getHandler);
+		event.registerBlockEntity(Capabilities.Item.BLOCK, DRAWER_BLOCK_ENTITY.get(), DrawerBlockEntity::getHandler);
 	}
 
 }

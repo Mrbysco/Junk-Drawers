@@ -1,7 +1,6 @@
 package com.mrbysco.junkdrawers.block.blockentity;
 
 import com.mrbysco.junkdrawers.JunkDrawers;
-import com.mrbysco.junkdrawers.config.JunkConfig;
 import com.mrbysco.junkdrawers.menu.DrawerMenu;
 import com.mrbysco.junkdrawers.registry.JunkRegistry;
 import net.minecraft.core.BlockPos;
@@ -17,6 +16,7 @@ import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -29,11 +29,8 @@ import org.jetbrains.annotations.Nullable;
 public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
 	public final RandomizedItemStackHandler handler = new RandomizedItemStackHandler(90) {
 		@Override
-		protected void onContentsChanged(int slot) {
-			if (JunkConfig.COMMON.randomizeOnContentChange.get()) {
-				this.randomizeInventory();
-			}
-			super.onContentsChanged(slot);
+		protected void onContentsChanged(int index, ItemStack previousContents) {
+			super.onContentsChanged(index, previousContents);
 			refreshClient();
 		}
 	};

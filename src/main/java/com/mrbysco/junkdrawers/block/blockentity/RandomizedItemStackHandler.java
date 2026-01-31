@@ -1,8 +1,9 @@
 package com.mrbysco.junkdrawers.block.blockentity;
 
-import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.ItemStackHandler;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.util.Tuple;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,25 +12,22 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RandomizedItemStackHandler extends ItemStackHandler {
+public class RandomizedItemStackHandler extends ItemStacksResourceHandler {
 	public RandomizedItemStackHandler(int size) {
 		super(size);
 	}
 
 	@Override
-	public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-		return super.isItemValid(slot, stack);
+	public boolean isValid(int index, ItemResource resource) {
+		return super.isValid(index, resource);
 	}
 
-	/**
-	 * Randomizes the items in the inventory
-	 */
-	public void randomizeInventory() {
-		Map<Integer, ItemStack> contents = new HashMap<>();
+	public void randomizeInventory(Transaction tx) {
+		Map<Integer, Tuple<ItemResource, Integer>> contents = new HashMap<>();
 
 		// Collect all items from the slots
-		for (int i = 0; i < getSlots(); i++) {
-			contents.put(i, getStackInSlot(i));
+		for (int i = 0; i < size(); i++) {
+			contents.put(i, new Tuple<>(getResource(i), getAmountAsInt(i)));
 		}
 
 		// Shuffle the slot indices
@@ -37,31 +35,31 @@ public class RandomizedItemStackHandler extends ItemStackHandler {
 		Collections.shuffle(list);
 
 		// Create a temporary map to hold the shuffled items
-		Map<Integer, ItemStack> shuffleMap = new LinkedHashMap<>();
+		Map<Integer, Tuple<ItemResource, Integer>> shuffleMap = new LinkedHashMap<>();
 		list.forEach(k -> shuffleMap.put(k, contents.get(k)));
 
 		// Clear the original slots and reassign the shuffled items
-		for (int i = 0; i < getSlots(); i++) {
-			validateSlotIndex(i);
-			this.stacks.set(i, ItemStack.EMPTY);
+		for (int i = 0; i < size(); i++) {
+			set(i, ItemResource.EMPTY, 0);
 		}
 
 		int index = 0;
-		for (Map.Entry<Integer, ItemStack> entry : shuffleMap.entrySet()) {
-			validateSlotIndex(index);
-			this.stacks.set(index, entry.getValue());
+		for (Map.Entry<Integer, Tuple<ItemResource, Integer>> entry : shuffleMap.entrySet()) {
+			set(index, entry.getValue().getA(), entry.getValue().getB());
 			index++;
 		}
 
 		// Verify the integrity of the inventory
-		int totalItemsBefore = contents.values().stream().mapToInt(ItemStack::getCount).sum();
+		int totalItemsBefore = contents.values().stream().mapToInt(Tuple::getB).sum();
 		int totalItemsAfter = 0;
-		for (int i = 0; i < getSlots(); i++) {
-			totalItemsAfter += getStackInSlot(i).getCount();
+		for (int i = 0; i < size(); i++) {
+			totalItemsAfter += getAmountAsInt(i);
 		}
 
 		if (totalItemsBefore != totalItemsAfter) {
 			throw new IllegalStateException("Item duplication detected: before=" + totalItemsBefore + ", after=" + totalItemsAfter);
+		} else {
+			tx.commit();
 		}
 	}
 }

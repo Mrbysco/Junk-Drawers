@@ -21,7 +21,7 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.ProblemReporter;
@@ -124,6 +124,7 @@ public class JunkDatagen {
 			String path = JunkDrawers.MOD_ID + ".subtitle." + sound.location().getPath();
 			this.add(path, text);
 		}
+
 		/**
 		 * Add the translation for a config entry
 		 *
@@ -158,11 +159,11 @@ public class JunkDatagen {
 		}
 
 
-		public String modSubtitle(ResourceLocation id) {
+		public String modSubtitle(Identifier id) {
 			return JunkDrawers.MOD_ID + ".subtitle." + id.getPath();
 		}
 
-		public ResourceLocation modLoc(String name) {
+		public Identifier modLoc(String name) {
 			return JunkDrawers.modLoc(name);
 		}
 	}
@@ -263,9 +264,9 @@ public class JunkDatagen {
 		@Override
 		protected void addTags(HolderLookup.Provider provider) {
 			this.tag(BlockTags.MINEABLE_WITH_AXE).add(JunkRegistry.OAK_DRAWER.get(), JunkRegistry.SPRUCE_DRAWER.get(),
-				JunkRegistry.BIRCH_DRAWER.get(), JunkRegistry.JUNGLE_DRAWER.get(), JunkRegistry.ACACIA_DRAWER.get(),
-				JunkRegistry.CHERRY_DRAWER.get(), JunkRegistry.DARK_OAK_DRAWER.get(), JunkRegistry.MANGROVE_DRAWER.get(),
-				JunkRegistry.BAMBOO_DRAWER.get(), JunkRegistry.CRIMSON_DRAWER.get(), JunkRegistry.WARPED_DRAWER.get());
+					JunkRegistry.BIRCH_DRAWER.get(), JunkRegistry.JUNGLE_DRAWER.get(), JunkRegistry.ACACIA_DRAWER.get(),
+					JunkRegistry.CHERRY_DRAWER.get(), JunkRegistry.DARK_OAK_DRAWER.get(), JunkRegistry.MANGROVE_DRAWER.get(),
+					JunkRegistry.BAMBOO_DRAWER.get(), JunkRegistry.CRIMSON_DRAWER.get(), JunkRegistry.WARPED_DRAWER.get());
 		}
 	}
 
@@ -293,8 +294,8 @@ public class JunkDatagen {
 		}
 
 		private void makeDrawer(BlockModelGenerators blockModels, DeferredBlock<DrawerBlock> registryObject) {
-			ResourceLocation texture = JunkDrawers.modLoc("block/" + registryObject.getId().getPath());
-			ResourceLocation model = DRAWER.create(registryObject.get(), TextureMapping.defaultTexture(texture), blockModels.modelOutput);
+			Identifier texture = JunkDrawers.modLoc("block/" + registryObject.getId().getPath());
+			Identifier model = DRAWER.create(registryObject.get(), TextureMapping.defaultTexture(texture), blockModels.modelOutput);
 			blockModels.blockStateOutput
 					.accept(
 							MultiVariantGenerator.dispatch(
