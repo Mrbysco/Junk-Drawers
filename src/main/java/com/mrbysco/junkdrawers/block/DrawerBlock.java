@@ -83,9 +83,9 @@ public class DrawerBlock extends BaseEntityBlock implements SimpleWaterloggedBlo
 						randomizedItemStackHandler.randomizeInventory(tx);
 						drawerBlockEntity.refreshClient();
 						float percentageFilled = getFillPercentage(randomizedItemStackHandler);
-						if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.random.nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
+						if (percentageFilled >= JunkConfig.COMMON.jamPercentage.get() && level.getRandom().nextDouble() <= JunkConfig.COMMON.jamChance.get()) {
 							level.playSound(null, pos, JunkRegistry.DRAWER_JAMMED.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
-							player.displayClientMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW), true);
+							player.sendOverlayMessage(Component.translatable("junkdrawers.drawer.jammed").withStyle(ChatFormatting.YELLOW));
 						} else {
 							level.playSound(null, pos, JunkRegistry.DRAWER_OPEN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
 							player.openMenu(drawerBlockEntity, pos);

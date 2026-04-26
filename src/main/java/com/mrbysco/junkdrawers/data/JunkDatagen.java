@@ -11,9 +11,9 @@ import net.minecraft.client.data.models.model.ModelTemplate;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
 import net.minecraft.client.data.models.model.TextureSlot;
+import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.HolderLookup.Provider;
-import net.minecraft.core.WritableRegistry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -24,14 +24,11 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -249,11 +246,6 @@ public class JunkDatagen {
 				return (Iterable<Block>) JunkRegistry.BLOCKS.getEntries().stream().map(holder -> (Block) holder.get())::iterator;
 			}
 		}
-
-		@Override
-		protected void validate(WritableRegistry<LootTable> writableregistry, ValidationContext validationcontext, ProblemReporter.Collector problemreporter$collector) {
-			super.validate(writableregistry, validationcontext, problemreporter$collector);
-		}
 	}
 
 	private static class JunkBlockTagsProvider extends BlockTagsProvider {
@@ -295,7 +287,7 @@ public class JunkDatagen {
 
 		private void makeDrawer(BlockModelGenerators blockModels, DeferredBlock<DrawerBlock> registryObject) {
 			Identifier texture = JunkDrawers.modLoc("block/" + registryObject.getId().getPath());
-			Identifier model = DRAWER.create(registryObject.get(), TextureMapping.defaultTexture(texture), blockModels.modelOutput);
+			Identifier model = DRAWER.create(registryObject.get(), TextureMapping.defaultTexture(new Material(texture)), blockModels.modelOutput);
 			blockModels.blockStateOutput
 					.accept(
 							MultiVariantGenerator.dispatch(
