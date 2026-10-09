@@ -22,11 +22,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class DrawerBlockEntity extends BlockEntity implements MenuProvider {
+	private boolean randomizingContents = false;
+
 	public final RandomizedItemStackHandler handler = new RandomizedItemStackHandler(90) {
 		@Override
 		protected void onContentsChanged(int slot) {
-			if (JunkConfig.COMMON.randomizeOnContentChange.get()) {
-				this.randomizeInventory();
+			if (JunkConfig.COMMON.randomizeOnContentChange.get() && !randomizingContents) {
+				randomizingContents = true;
+				try {
+					this.randomizeInventory();
+				} finally {
+					randomizingContents = false;
+				}
 			}
 			super.onContentsChanged(slot);
 			refreshClient();
