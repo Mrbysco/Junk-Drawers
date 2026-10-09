@@ -1,1 +1,1 @@
-* Fix the built-in config option names/descriptions
+* Make sure the inventory only randomizes once and not while already in the process of randomizing
