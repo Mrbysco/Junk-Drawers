@@ -1,1 +1,1 @@
-* Make sure the inventory only randomizes once and not while already in the process of randomizing
+* Add ja_jp translation (courtesy of [Nearpoin](https://github.com/Mrbysco/Junk-Drawers/pull/2))
